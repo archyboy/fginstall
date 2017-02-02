@@ -1,0 +1,191 @@
+#!/usr/bin/bash
+
+alias cls='printf "\033c"'
+shopt -s expand_aliases
+cls
+
+RED='\033[0;31m'
+BLUE='\033[1;34m'
+GREEN='\033[0;32m'
+PURPLE='\033[0;35m' LIGHTPURPLE='\033[1;35m'
+GREY='\033[0;37m' LIGHTGREY='\033[1;37m'
+CYAN='\033[0;36m'
+ORANGE='\033[0;33m'
+YELLOW='\033[1;11m'
+WHITE='\033[1;37m'
+NOCOLOR='\033[0m'
+
+VERSION="0.1-beta"
+AUTHOR="ArchyBoy"
+DIRECTORY_DEFAULT=$(pwd)/
+LANGUAGE_BRANCH_DEVELOPMENT="dev"
+LANGUAGE_BRANCH_STABLE="stable"
+LANGUAGE_BRANCH_ALTERNATIVE="alt"
+
+# Development repository
+REPOSITORY_DEVELOPMENT_SIMGEAR="https://git.code.sf.net/p/flightgear/simgear"
+REPOSITORY_DEVELOPMENT_FLIGHTGEAR="https://git.code.sf.net/p/flightgear/flightgear"
+REPOSITORY_DEVELOPMENT_FGDATA="https://git.code.sf.net/p/flightgear/fgdata"
+REPOSITORY_DEVELOPMENT_FGADDON="https://svn.code.sf.net/p/flightgear/fgaddon/trunk"
+
+# Stable repository
+REPOSITORY_STABLE_SIMGEAR=""
+REPOSITORY_STABLE_FLIGHTGEAR=""
+REPOSITORY_STABLE_FGDATA=""
+REPOSITORY_STABLE_FGADDON=""
+
+
+echo -e "${LIGHTPURPLE}Welcome to FlightGear's remote source installer ${GREEN}${VERSION}${NOCOLOR} by ${GREEN}${AUTHOR}${NOCOLOR}"
+echo -e ""
+echo -e "${WHITE}Choose you branch${NOCOLOR}${GREY} (Press ENTER for default)${NOCOLOR}"
+printf "${CYAN}"
+echo -e "${BRANCH_DEVELOPMENT} ${PURPLE}(default)${CYAN}"
+echo -e "${BRANCH_STABLE}"
+echo -e "${BRANCH_ALTERNATIVE}"
+printf "${NOCOLOR}"
+printf "branch: "
+read branch
+
+if ! [[ $branch == 'dev' ]]
+then
+	echo -e "${RED}This branch is not yet implemented. Use only dev branch at this moment!${NOCOLOR}"
+	echo -e "${ORANGE}Falling back to default branch(${CYAN}dev${NOCOLOR})"
+	REMOTE_SIMGEAR=$REPOSITORY_DEVELOPMENT_SIMGEAR
+	REMOTE_FLIGHTGEAR=$REPOSITORY_DEVELOPMENT_FLIGHTGEAR
+	REMOTE_FGDATA=$REPOSITORY_DEVELOPMENT_FGDATA
+	REMOTE_FGADDON=$REPOSITORY_DEVELOPMENT_FGADDON
+else
+	REMOTE_SIMGEAR=$REPOSITORY_STABLE_SIMGEAR
+	REMOTE_FLIGHTGEAR=$REPOSITORY_STABLE_FLIGHTGEAR
+	REMOTE_FGDATA=$REPOSITORY_STABLE_FGDATA
+	REMOTE_FGADDON=$REPOSITORY_STABLE_FGADDON
+fi
+
+echo -e ""
+echo -e "${WHITE}Type the full installation path ${GREY}(Press ENTER for default)${NOCOLOR}"
+printf "${CYAN}${DIRECTORY_DEFAULT}${NOCOLOR}:"
+read install_path
+
+fchar=$(echo ${install_path:0:1})
+
+if [[ $fchar == '/' ]]
+then
+	DIRECTORY_INSTALL=$install_path
+else
+	DIRECTORY_INSTALL=$DIRECTORY_DEFAULT$install_path
+fi
+
+
+if ! [ -d $DIRECTORY_INSTALL ]
+then
+	echo -e ""
+	echo -e "${RED}Warning! Installation path${CYAN} $DIRECTORY_INSTALL ${RED}does NOT exist!${NOCOLOR}"
+	echo -e ""
+	echo -e "${ORANGE}Create install path anyway? Or press ENTER to install in: ${CYAN}($DIRECTORY_DEFAULT)${NOCOLOR}"
+	printf "(yes/no/ENTER):"
+	read install_option
+
+	case $install_option in
+		yes)
+			mkdir -p $DIRECTORY_INSTALL
+			echo -e "${ORANGE}Installing in directory:  ${CYAN}$DIRECTORY_INSTALL${NOCOLOR}"
+			;;
+		no)
+			echo -e "${ORANGE}Aborting!"
+			exit 0
+			;;
+		*)
+			DIRECTORY_INSTALL=$DIRECTORY_DEFAULT
+			echo -e "${ORANGE}Installing in default directory: ${CYAN}$DIRECTORY_INSTALL${NOCOLOR}"
+			;;
+	esac
+fi
+
+DIRECTORY_SIMGEAR="${DIRECTORY_INSTALL}flightgear-simgear"
+DIRECTORY_FLIGHTGEAR="${DIRECTORY_INSTALL}flightgear-flightgear"
+DIRECTORY_FGDATA="${DIRECTORY_INSTALL}flightgear-fgdata"
+DIRECTORY_FGADDON="${DIRECTORY_INSTALL}flightgear-fgaddon"
+
+
+######################### INSTALLING SIMGEAR ###############################
+echo -e "${ORANGE}Installing Simgear in directory ${CYAN}$DIRECTORY_SIMGEAR${NOCOLOR}"
+
+if [ -d "$DIRECTORY_SIMGEAR" ]
+then
+	cd $DIRECTORY_SIMGEAR
+        echo -e "${ORANGE}Pulling Simgear updates from remote sources ${NOCOLOR}"
+	git pull
+	echo -e "${GREEN}Pull completed${NOCOLOR}"
+else
+	echo -e "${ORANGE}Cloning Simgear from remote source ${CYAN}($REMOTE_SIMGEAR)${NOCOLOR}"
+	git clone $REMOTE_SIMGEAR $DIRECTORY_SIMGEAR
+	cd $DIRECTORY_SIMGEAR
+	mkdir build
+fi
+cd build
+echo -e "${ORANGE}Building, Recompiling and installs Simgear${NOCOLOR}"
+cmake ../ -DCMAKE_BUILD_TYPE=Release
+make
+sudo make install
+echo -e "${GREEN}Installation of Simgear completed successfully!${NOCOLOR}"
+
+######################## INSTALLING FLIGHTGEAR ###############################
+echo -e "${ORANGE}Installing Flightgear in directory ${CYAN} $DIRECTORY_FLIGHTGEAR"
+
+if [ -d "$DIRECTORY_FLIGHTGEAR" ]
+then
+	cd $DIRECTORY_FLIGHTGEAR
+        echo -e "${ORANGE}Pulling Flightgear updates from remote sources ${NOCOLOR}"
+	git pull
+	echo -e "${GREEN}Pull completed${NOCOLOR}"
+else
+	echo -e "${ORANGE}Cloning Flightgear from remote source ${CYAN}($REMOTE_FLIGHTGEAR)${NOCOLOR}"
+	git clone $REMOTE_FLIGHTGEAR $DIRECTORY_FLIGHTGEAR
+	cd $DIRECTORY_FLIGHTGEAR
+	mkdir build
+fi
+cd build
+echo -e "${ORANGE}Building, Recompiling and installs Flightgear${NOCOLOR}"
+cmake ../ -DCMAKE_BUILD_TYPE=Release
+make
+sudo make install
+echo -e "${GREEN}Installation of Flightgear completed successfully!${NOCOLOR}"
+
+######################## INSTALLING FGDATA ###############################
+echo -e "${ORANGE}Installing FGData in directory ${CYAN} $DIRECTORY_FGDATA"
+
+if [ -d "$DIRECTORY_FGDATA" ]
+then
+	cd $DIRECTORY_FGDATA
+        echo -e "${ORANGE}Pulling FGData updates from remote sources ${NOCOLOR}"
+	git pull
+	echo -e "${GREEN}Pull completed${NOCOLOR}"
+else
+	echo -e "${ORANGE}Cloning FGData from remote source ${CYAN}($REMOTE_FGDATA)${NOCOLOR}"
+#	git clone $REMOTE_FGDATA $DIRECTORY_FGDATA
+
+	echo -e "${GREEN}Installation of FGData completed successfully!${NOCOLOR}"
+fi
+
+
+######################## INSTALLING FGADDON ###############################
+echo -e "${ORANGE}Installing FGAddon in directory ${CYAN} $DIRECTORY_FGADDON"
+
+if [ -d "$DIRECTORY_FGADDON" ]
+then
+	cd $DIRECTORY_FGADDON
+        echo -e "${ORANGE}Updating FGAddon from remote sources ${NOCOLOR}"
+	svn cleanup
+	svn update
+	echo -e "${GREEN}Update completed${NOCOLOR}"
+else
+	echo -e "${ORANGE}Installing FGAddon from remote source ${CYAN}($REMOTE_FGADDON)${NOCOLOR}"
+#	svn checkout $REMOTE_FGADDON $DIRECTORY_FGADDON
+
+	echo -e "${GREEN}Installation of FGAddon completed successfully!${NOCOLOR}"
+fi
+
+echo -e ""
+echo -e "${YELLOW}Congratulation! FlightGear successfully downloaded, compiled and installed to your system.${NOCOLOR} Please enjoy the Free and Open Source Flight Simulator!"
+echo -e ""
+#echo -e "${ORANGE}Did you find this installation program usefull and want me to make further progress you are welcome to donate(pay-what-you-want) to my PayPal account: ${GREEN}archy@workmail.com${NOCOLOR}"
