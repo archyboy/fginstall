@@ -87,7 +87,6 @@ else
 	DIRECTORY_INSTALL=$DIRECTORY_DEFAULT/$install_path
 fi
 
-
 if ! [ -d $DIRECTORY_INSTALL ]
 then
 	echo -e ""
@@ -117,7 +116,6 @@ DIRECTORY_SIMGEAR="${DIRECTORY_INSTALL}/flightgear-simgear"
 DIRECTORY_FLIGHTGEAR="${DIRECTORY_INSTALL}/flightgear-flightgear"
 DIRECTORY_FGDATA="${DIRECTORY_INSTALL}/flightgear-fgdata"
 DIRECTORY_FGADDON="${DIRECTORY_INSTALL}/flightgear-fgaddon"
-
 
 ######################### INSTALLING SIMGEAR ###############################
 echo -e "${ORANGE}Installing Simgear in directory ${CYAN}$DIRECTORY_SIMGEAR${NOCOLOR}"
@@ -178,7 +176,6 @@ else
 
 	echo -e "${GREEN}Installation of FGData completed successfully!${NOCOLOR}"
 fi
-
 
 ######################## INSTALLING FGADDON ###############################
 echo -e "${ORANGE}Installing FGAddon in directory ${CYAN} $DIRECTORY_FGADDON"
