@@ -1,8 +1,8 @@
 #!/usr/bin/bash
 
-alias cls='printf "\033c"'
-shopt -s expand_aliases
-cls
+#alias cls='printf "\033c"'
+#shopt -s expand_aliases
+#cls
 
 
 RED='\033[0;31m'
@@ -37,17 +37,21 @@ REPOSITORY_STABLE_FLIGHTGEAR=""
 REPOSITORY_STABLE_FGDATA=""
 REPOSITORY_STABLE_FGADDON=""
 
+arg1=$1
+arg2=$2
 
 echo -e "${LIGHTPURPLE}Welcome to FlightGear's remote source installer ${GREEN}${VERSION}${NOCOLOR} by ${GREEN}${AUTHOR}${NOCOLOR}"
 echo -e ""
 echo -e "${WHITE}Choose you branch${NOCOLOR}${GREY} (Press ENTER for default)${NOCOLOR}"
 printf "${CYAN}"
-echo -e "${BRANCH_DEVELOPMENT} ${PURPLE}(default)${CYAN}"
-echo -e "${BRANCH_STABLE}"
-echo -e "${BRANCH_ALTERNATIVE}"
+echo -e "${LANGUAGE_BRANCH_DEVELOPMENT} ${PURPLE}(default)${CYAN}"
+echo -e "${LANGUAGE_BRANCH_STABLE}"
+echo -e "${LANGUAGE_BRANCH_ALTERNATIVE}"
 printf "${NOCOLOR}"
 printf "branch: "
 read branch
+
+
 
 if ! [[ $branch == 'dev' ]]
 then
