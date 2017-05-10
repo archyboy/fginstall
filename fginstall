@@ -18,7 +18,7 @@ NOCOLOR='\033[0m'
 
 VERSION="0.1-beta"
 AUTHOR="ArchyBoy"
-DIRECTORY_DEFAULT=$(pwd)/
+DIRECTORY_DEFAULT=$(pwd)
 
 # Language constants
 LANGUAGE_BRANCH_DEVELOPMENT="dev"
@@ -51,26 +51,31 @@ printf "${NOCOLOR}"
 printf "branch: "
 read branch
 
+if ! [[ $branch ]]
+then
+	branch='dev'
+fi
 
+echo -e "${PURPLE}Selected branch: ${CYAN}${branch}"
 
 if ! [[ $branch == 'dev' ]]
 then
 	echo -e "${RED}This branch is not yet implemented. Use only dev branch at this moment!${NOCOLOR}"
 	echo -e "${ORANGE}Falling back to default branch(${CYAN}dev${NOCOLOR})"
-	REMOTE_SIMGEAR=$REPOSITORY_DEVELOPMENT_SIMGEAR
+	REMOTE_SIMGEAR="https://git.code.sf.net/p/flightgear/simgear"
 	REMOTE_FLIGHTGEAR=$REPOSITORY_DEVELOPMENT_FLIGHTGEAR
 	REMOTE_FGDATA=$REPOSITORY_DEVELOPMENT_FGDATA
 	REMOTE_FGADDON=$REPOSITORY_DEVELOPMENT_FGADDON
 else
-	REMOTE_SIMGEAR=$REPOSITORY_STABLE_SIMGEAR
-	REMOTE_FLIGHTGEAR=$REPOSITORY_STABLE_FLIGHTGEAR
-	REMOTE_FGDATA=$REPOSITORY_STABLE_FGDATA
-	REMOTE_FGADDON=$REPOSITORY_STABLE_FGADDON
+	REMOTE_SIMGEAR=$REPOSITORY_DEVELOPMENT_SIMGEAR
+	REMOTE_FLIGHTGEAR=$REPOSITORY_DEVELOPMENT_FLIGHTGEAR
+	REMOTE_FGDATA=$REPOSITORY_DEVELOPMENT_FGDATA
+	REMOTE_FGADDON=$REPOSITORY_DEVELOPMENT_FGADDON
 fi
 
 echo -e ""
 echo -e "${WHITE}Type the full installation path ${GREY}(Press ENTER for default)${NOCOLOR}"
-printf "${CYAN}${DIRECTORY_DEFAULT}${NOCOLOR}:"
+printf "${CYAN}${DIRECTORY_DEFAULT}/${NOCOLOR}:"
 read install_path
 
 fchar=$(echo ${install_path:0:1})
@@ -79,7 +84,7 @@ if [[ $fchar == '/' ]]
 then
 	DIRECTORY_INSTALL=$install_path
 else
-	DIRECTORY_INSTALL=$DIRECTORY_DEFAULT$install_path
+	DIRECTORY_INSTALL=$DIRECTORY_DEFAULT/$install_path
 fi
 
 
@@ -108,10 +113,10 @@ then
 	esac
 fi
 
-DIRECTORY_SIMGEAR="${DIRECTORY_INSTALL}flightgear-simgear"
-DIRECTORY_FLIGHTGEAR="${DIRECTORY_INSTALL}flightgear-flightgear"
-DIRECTORY_FGDATA="${DIRECTORY_INSTALL}flightgear-fgdata"
-DIRECTORY_FGADDON="${DIRECTORY_INSTALL}flightgear-fgaddon"
+DIRECTORY_SIMGEAR="${DIRECTORY_INSTALL}/flightgear-simgear"
+DIRECTORY_FLIGHTGEAR="${DIRECTORY_INSTALL}/flightgear-flightgear"
+DIRECTORY_FGDATA="${DIRECTORY_INSTALL}/flightgear-fgdata"
+DIRECTORY_FGADDON="${DIRECTORY_INSTALL}/flightgear-fgaddon"
 
 
 ######################### INSTALLING SIMGEAR ###############################
@@ -169,7 +174,7 @@ then
 	echo -e "${GREEN}Pull completed${NOCOLOR}"
 else
 	echo -e "${ORANGE}Cloning FGData from remote source ${CYAN}($REMOTE_FGDATA)${NOCOLOR}"
-#	git clone $REMOTE_FGDATA $DIRECTORY_FGDATA
+	git clone $REMOTE_FGDATA $DIRECTORY_FGDATA
 
 	echo -e "${GREEN}Installation of FGData completed successfully!${NOCOLOR}"
 fi
@@ -187,7 +192,7 @@ then
 	echo -e "${GREEN}Update completed${NOCOLOR}"
 else
 	echo -e "${ORANGE}Installing FGAddon from remote source ${CYAN}($REMOTE_FGADDON)${NOCOLOR}"
-#	svn checkout $REMOTE_FGADDON $DIRECTORY_FGADDON
+svn checkout $REMOTE_FGADDON $DIRECTORY_FGADDON
 
 	echo -e "${GREEN}Installation of FGAddon completed successfully!${NOCOLOR}"
 fi
